@@ -33,7 +33,7 @@ export default function SearchPage() {
       <div className="relative mb-4">
         <Search size={22} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
         <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search movies, TV shows, anime…" data-testid="search-input"
-          className="font-display w-full rounded-lg border border-white/10 bg-[var(--surface)] py-4 pl-12 pr-12 text-lg outline-none transition-[border-color,box-shadow] placeholder:text-gray-600 focus:border-[var(--primary)] focus:shadow-[0_0_0_4px_var(--primary-glow)] sm:text-2xl" />
+          className="font-display w-full rounded-lg border border-white/10 bg-[var(--surface)] py-4 pl-12 pr-12 text-lg outline-none transition-[border-color,box-shadow] placeholder:text-gray-600 focus:border-[var(--brand)] focus:shadow-[0_0_0_4px_var(--brand-glow)] sm:text-2xl" />
         {q && (
           <button onClick={() => setQ("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white" aria-label="Clear" data-testid="search-clear">
             <X size={20} />
@@ -51,7 +51,7 @@ export default function SearchPage() {
           <p className="mb-2 text-xs uppercase tracking-widest text-gray-500">Popular searches</p>
           <div className="flex flex-wrap gap-2">
             {SUGGEST.map((s) => (
-              <button key={s} onClick={() => setQ(s)} className="rounded-md border border-white/10 px-3 py-1.5 text-sm text-gray-300 hover:border-[var(--primary)] hover:text-white" data-testid={`suggest-${s.toLowerCase().replace(/[^a-z]+/g, "-")}`}>{s}</button>
+              <button key={s} onClick={() => setQ(s)} className="rounded-md border border-white/10 px-3 py-1.5 text-sm text-gray-300 hover:border-[var(--brand)] hover:text-white" data-testid={`suggest-${s.toLowerCase().replace(/[^a-z]+/g, "-")}`}>{s}</button>
             ))}
           </div>
           <h2 className="font-display mb-3 mt-8 text-lg font-bold">Trending this week</h2>

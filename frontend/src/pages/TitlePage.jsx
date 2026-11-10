@@ -7,6 +7,7 @@ import { NotFound, PageLoader, TitleHero } from "@/components/TitleHero";
 import { useApi } from "@/hooks/useApi";
 import { fromTmdb, img, tmdbList } from "@/lib/media";
 import { pushHistory } from "@/lib/store";
+import { AdSlot } from "@/components/AdSlot";
 
 export const SeasonEpisodes = ({ tvId, seasons, season, onSeason, activeEpisode }) => {
   const { data, loading } = useApi(`/tmdb/tv/${tvId}/season/${season}`);
@@ -16,7 +17,7 @@ export const SeasonEpisodes = ({ tvId, seasons, season, onSeason, activeEpisode 
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <h2 className="font-display text-lg font-bold sm:text-xl">Episodes</h2>
         <select value={season} onChange={(e) => onSeason(Number(e.target.value))} data-testid="season-select"
-          className="rounded-md border border-white/15 bg-[var(--surface)] px-3 py-1.5 text-sm outline-none focus:border-[var(--primary)]">
+          className="rounded-md border border-white/15 bg-[var(--surface)] px-3 py-1.5 text-sm outline-none focus:border-[var(--brand)]">
           {valid.map((s) => <option key={s.season_number} value={s.season_number}>{s.name || `Season ${s.season_number}`}</option>)}
         </select>
       </div>
@@ -26,7 +27,7 @@ export const SeasonEpisodes = ({ tvId, seasons, season, onSeason, activeEpisode 
           const on = activeEpisode === ep.episode_number;
           return (
             <Link key={ep.id} to={`/watch/tv/${tvId}?s=${season}&e=${ep.episode_number}`} data-testid={`episode-${ep.episode_number}`}
-              className={`group flex gap-3 rounded-md border p-2 transition-colors ${on ? "border-[var(--primary)] bg-[var(--primary)]/10" : "border-white/5 bg-[var(--surface)] hover:bg-[var(--surface-2)]"}`}>
+              className={`group flex gap-3 rounded-md border p-2 transition-colors ${on ? "border-[var(--brand)] bg-[var(--brand)]/10" : "border-white/5 bg-[var(--surface)] hover:bg-[var(--surface-2)]"}`}>
               <div className="relative aspect-video w-32 shrink-0 overflow-hidden rounded bg-black">
                 {ep.still_path && <img src={img(ep.still_path, "w300")} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />}
                 <Play size={22} className="absolute inset-0 m-auto fill-white opacity-0 transition-opacity group-hover:opacity-100" />
@@ -84,7 +85,10 @@ export default function TitlePage({ type }) {
 
   return (
     <div data-testid={`title-page-${type}`}>
-      <Seo title={`Watch ${item.title}${item.year ? ` (${item.year})` : ""}`} description={item.overview} image={item.backdrop || item.poster} type={type === "movie" ? "video.movie" : "video.tv_show"} />
+      <Seo title={`Watch ${item.title}${item.year ? ` (${item.year})` : ""} Online Free in HD`} description={`Watch ${item.title} online free in HD. ${item.overview}`} image={item.backdrop || item.poster} type={type === "movie" ? "video.movie" : "video.tv_show"}
+        keywords={`watch ${item.title} online free, ${item.title} full ${type === "movie" ? "movie" : "series"} free, ${item.title} streaming HD, ${item.title} ${item.year}`}
+        jsonLd={{ "@context": "https://schema.org", "@type": type === "movie" ? "Movie" : "TVSeries", name: item.title, description: item.overview, image: item.poster, datePublished: data.release_date || data.first_air_date, genre: item.genres,
+          ...(data.vote_count ? { aggregateRating: { "@type": "AggregateRating", ratingValue: item.rating, ratingCount: data.vote_count, bestRating: 10 } } : {}) }} />
       <TitleHero item={item} meta={meta} trailerKey={trailer?.key} />
       <div className="space-y-10">
         {type === "tv" && (
@@ -92,6 +96,7 @@ export default function TitlePage({ type }) {
             <SeasonEpisodes tvId={id} seasons={data.seasons} season={season} onSeason={setSeason} />
           </div>
         )}
+        <AdSlot placement="title_page" className="px-4 sm:px-8 lg:px-14" />
         <Cast cast={data.credits?.cast} />
         <Row title="More Like This" items={similar} testId="row-more-like-this" />
       </div>

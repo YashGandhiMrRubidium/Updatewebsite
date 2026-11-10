@@ -14,7 +14,7 @@ export const Chips = ({ options, value, onChange, testPrefix }) => (
       const on = String(v) === String(value);
       return (
         <button key={v} onClick={() => onChange(on ? "" : v)} data-testid={`${testPrefix}-${String(v).toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-          className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-[background-color,border-color,color] sm:text-sm ${on ? "border-[var(--primary)] bg-[var(--primary)] text-white" : "border-white/15 text-gray-300 hover:border-white/40 hover:text-white"}`}>
+          className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-[background-color,border-color,color] sm:text-sm ${on ? "border-[var(--brand)] bg-[var(--brand)] text-white" : "border-white/15 text-gray-300 hover:border-white/40 hover:text-white"}`}>
           {label}
         </button>
       );

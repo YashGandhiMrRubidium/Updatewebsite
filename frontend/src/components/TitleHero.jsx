@@ -19,7 +19,7 @@ export const TitleHero = ({ item, meta = [], trailerKey, playTo }) => {
       <div className="relative z-10 flex min-h-[78vh] items-end gap-8 px-4 pb-10 pt-24 sm:px-8 lg:px-14">
         {item.poster && <img src={item.poster} alt={item.title} className="fade-up hidden w-56 shrink-0 rounded-lg shadow-2xl ring-1 ring-white/10 md:block lg:w-64" />}
         <div className="max-w-2xl space-y-4">
-          <span className="fade-up inline-block rounded bg-[var(--primary)]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.25em] text-[#ff4d52]">
+          <span className="fade-up inline-block rounded bg-[var(--brand)]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.25em] text-[#ff4d52]">
             {item.type === "tv" ? "Series" : item.type}
           </span>
           <h1 className="fade-up fade-up-2 font-display text-4xl font-extrabold leading-[0.95] tracking-tight sm:text-5xl lg:text-6xl" data-testid="title-name">{item.title}</h1>
@@ -76,7 +76,7 @@ export const PageLoader = () => (
 
 export const NotFound = ({ text = "We couldn't find that title." }) => (
   <div className="flex min-h-[70vh] flex-col items-center justify-center gap-4 px-4 text-center" data-testid="not-found">
-    <p className="font-display text-6xl font-black text-[var(--primary)]">404</p>
+    <p className="font-display text-6xl font-black text-[var(--brand)]">404</p>
     <p className="text-gray-400">{text}</p>
     <Link to="/" className="btn-primary rounded-md px-5 py-2 font-semibold" data-testid="not-found-home">Back to Home</Link>
   </div>

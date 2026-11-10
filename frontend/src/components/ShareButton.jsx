@@ -56,8 +56,8 @@ export const ShareButton = ({ title, url, label = "Share", className = "", testI
               </a>
             ))}
           </div>
-          <div className="mt-2 flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 p-1.5 pl-3">
-            <span className="flex-1 truncate text-xs text-gray-400" data-testid="share-link-text">{link}</span>
+          <div className="mt-2 flex min-w-0 items-center gap-2 rounded-lg border border-white/10 bg-black/40 p-1.5 pl-3">
+            <span className="min-w-0 flex-1 truncate text-xs text-gray-400" data-testid="share-link-text">{link}</span>
             <button onClick={copy} className="btn-primary flex items-center gap-1.5 rounded-md px-3 py-2 text-xs font-semibold" data-testid="share-copy-link">
               {copied ? <Check size={14} /> : <Copy size={14} />} {copied ? "Copied" : "Copy"}
             </button>

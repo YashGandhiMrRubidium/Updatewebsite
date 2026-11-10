@@ -19,6 +19,7 @@ export function fromTmdb(it, fallback = "movie") {
     rating: it.vote_average ? Number(it.vote_average).toFixed(1) : null,
     overview: it.overview || "",
     genres: (it.genres || []).map((g) => g.name),
+    genreIds: it.genre_ids || (it.genres || []).map((g) => g.id),
   };
 }
 
@@ -33,7 +34,7 @@ export function fromAni(m) {
     rating: m.averageScore ? (m.averageScore / 10).toFixed(1) : null,
     overview: strip(m.description),
     genres: m.genres || [],
-    episodes: m.episodes,
+    episodes: m.episodes || (m.nextAiringEpisode?.episode ? m.nextAiringEpisode.episode - 1 : null),
   };
 }
 

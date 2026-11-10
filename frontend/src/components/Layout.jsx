@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { Search, Home, Film, Tv, Sparkles, Heart } from "lucide-react";
 import { LiveCounter } from "@/components/LiveCounter";
 import { ShareButton } from "@/components/ShareButton";
+import { AdSlot } from "@/components/AdSlot";
 
 const NAV = [
   { to: "/", label: "Home", icon: Home, end: true },
@@ -14,7 +15,7 @@ const NAV = [
 
 export const Logo = () => (
   <Link to="/" className="font-display text-xl font-black tracking-tight sm:text-2xl" data-testid="logo-link">
-    <span className="text-[var(--primary)]">CINE</span>STREAM
+    <span className="text-[var(--brand)]">CINE</span>STREAM
   </Link>
 );
 
@@ -31,7 +32,7 @@ const Header = () => {
       <div className="flex h-14 items-center gap-6 px-4 sm:h-16 sm:px-8 lg:px-14">
         <Logo />
         <nav className="hidden items-center gap-5 md:flex">
-          {NAV.map(({ to, label, end }) => (
+          {[...NAV.slice(0, 4), { to: "/discover", label: "Discover" }, NAV[4]].map(({ to, label, end }) => (
             <NavLink key={to} to={to} end={end} data-testid={`nav-${label.toLowerCase().replace(/\s/g, "-")}`}
               className={({ isActive }) => `text-sm transition-colors ${isActive ? "font-semibold text-white" : "text-gray-400 hover:text-gray-200"}`}>
               {label}
@@ -58,7 +59,7 @@ const BottomNav = () => (
           className={({ isActive }) => `flex flex-col items-center gap-0.5 py-2 text-[10px] transition-colors ${isActive ? "text-white" : "text-gray-500"}`}>
           {({ isActive }) => (
             <>
-              <Icon size={20} className={isActive ? "text-[var(--primary)]" : ""} />
+              <Icon size={20} className={isActive ? "text-[var(--brand)]" : ""} />
               {label}
             </>
           )}
@@ -69,6 +70,8 @@ const BottomNav = () => (
 );
 
 const Footer = () => (
+  <>
+  <AdSlot placement="footer" className="mt-16 px-4 sm:px-8 lg:px-14" />
   <footer className="mt-16 border-t border-white/5 px-4 pb-24 pt-10 text-sm text-gray-500 sm:px-8 md:pb-10 lg:px-14" data-testid="site-footer">
     <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
       <div className="max-w-sm space-y-3">
@@ -78,7 +81,7 @@ const Footer = () => (
       <div className="flex flex-wrap gap-x-6 gap-y-2">
         {NAV.slice(1).map(({ to, label }) => <Link key={to} to={to} className="hover:text-white">{label}</Link>)}
         <Link to="/search" className="hover:text-white">Search</Link>
-        <Link to="/admin" className="hover:text-white" data-testid="footer-admin-link">Admin</Link>
+        <Link to="/discover" className="hover:text-white">Discover</Link>
       </div>
       <div className="flex items-center gap-3">
         <LiveCounter />
@@ -88,6 +91,7 @@ const Footer = () => (
     </div>
     <p className="mt-8 text-xs">© {new Date().getFullYear()} CineStream</p>
   </footer>
+  </>
 );
 
 export default function Layout() {

@@ -6,7 +6,7 @@ import { dark } from "@clerk/ui/themes";
 // Brand Clerk here once: it styles sign-in, sign-up and the user menu.
 const appearance = {
   theme: dark,
-  variables: { colorPrimary: "#E50914", colorBackground: "#121318", fontFamily: "Manrope, sans-serif", borderRadius: "0.5rem" },
+  variables: { colorPrimary: "#E50914", colorPrimaryForeground: "#ffffff", colorTextOnPrimaryBackground: "#ffffff", colorBackground: "#121318", fontFamily: "Manrope, sans-serif", borderRadius: "0.5rem" },
   captcha: { theme: "dark" },
 };
 

@@ -30,7 +30,7 @@ export const PosterCard = ({ item, index = 0, className = "" }) => {
       </Link>
       <button onClick={onLike} aria-label="Add to My List" data-testid={`like-${tid}`}
         className="absolute right-1.5 top-1.5 rounded-full bg-black/60 p-1.5 backdrop-blur transition-[opacity,transform] hover:scale-110 md:opacity-0 md:group-hover:opacity-100">
-        <Heart size={15} className={saved ? "fill-[var(--primary)] text-[var(--primary)]" : "text-white"} />
+        <Heart size={15} className={saved ? "fill-[var(--brand)] text-[var(--brand)]" : "text-white"} />
       </button>
     </div>
   );

@@ -32,7 +32,7 @@ export const Row = ({ title, subtitle, items, loading, to, testId }) => {
             {d < 0 ? <ChevronLeft size={30} /> : <ChevronRight size={30} />}
           </button>
         ))}
-        <div ref={ref} className={`no-scrollbar flex snap-x gap-2 overflow-x-auto pb-4 pt-1 sm:gap-3 ${PAD}`}>
+        <div ref={ref} className={`no-scrollbar flex snap-x scroll-px-4 gap-2 sm:scroll-px-8 lg:scroll-px-14 overflow-x-auto pb-4 pt-1 sm:gap-3 ${PAD}`}>
           {loading
             ? Array.from({ length: 8 }).map((_, i) => <div key={i} className={`skeleton aspect-[2/3] shrink-0 rounded-md ${W}`} />)
             : items.map((it, i) => <PosterCard key={keyOf(it)} item={it} index={i} className={`snap-start ${W}`} />)}
@@ -41,6 +41,18 @@ export const Row = ({ title, subtitle, items, loading, to, testId }) => {
     </section>
   );
 };
+
+export const SectionHead = ({ eyebrow, title, subtitle, icon: Icon, className = "" }) => (
+  <div className={`mb-5 px-4 sm:px-8 lg:px-14 ${className}`}>
+    {eyebrow && (
+      <p className="mb-2 flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.3em] text-[#ff4d52]">
+        <span className="h-px w-8 bg-[var(--brand)]" /> {eyebrow}
+      </p>
+    )}
+    <h2 className="font-display flex items-center gap-3 text-3xl font-extrabold tracking-tight sm:text-4xl">{Icon && <Icon className="text-[var(--brand)]" size={30} />}{title}</h2>
+    {subtitle && <p className="mt-1 text-sm text-gray-400 sm:text-base">{subtitle}</p>}
+  </div>
+);
 
 export const ApiRow = ({ url, map, ...rest }) => {
   const [ref, inView] = useInView();

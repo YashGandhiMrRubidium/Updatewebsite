@@ -1,0 +1,46 @@
+{
+  "summary": "First full e2e run of CineStream (movie/TV/anime streaming, Clerk admin). Backend: 21/22 pytest pass (1 skip). Frontend: home hero/rows/lazy rows, live counter, nav + mobile bottom-nav, browse pages (genre chips, sort tabs, load-more), title pages (movie/tv/anime), watch pages (server chips, click/next-server, dnd-kit reorder w/ localStorage persist, drop-on-player switch, reset order, prev/next ep, sub/dub), share dialog, My List (localStorage, tabs, reload persistence), Because-you-watched row, search (debounced, tabs, anime in All), no Adsterra, 390px no overflow, Clerk ticket sign-in admin/member, admin CRUD/toggle/drag/delete, sign-out all verified working.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "GET /api/anime/{id}", "issue": "Unknown AniList id returns 502 'AniList request failed' instead of 404 - AniList returns HTTP 404 for missing Media, anilist() maps every non-200 to 502 so the 404 branch is never reached."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Anime episodes (AnimeTitlePage EpisodeGrid / WatchPage)", "issue": "Ongoing anime with episodes=null (e.g. One Piece /anime/21) fall back to 12 episodes; grid shows only 1-12 and next-episode-button disables at ep 12. Need AniList nextAiringEpisode { episode } (total = nextAiringEpisode.episode - 1) or allow free episode entry.", "selector": "[data-testid=anime-episode-grid], [data-testid=next-episode-button]", "priority": "HIGH"},
+      {"component": "Admin Switch (shadcn)", "issue": "CSS var clash: index.css defines plain :root --primary:#e50914 (and --muted) AFTER @layer base HSL --primary, so hsl(var(--primary)) is invalid -> bg-primary transparent. Checked switches render as nearly invisible dark dots; enabled vs disabled not distinguishable. Rename brand vars (e.g. --brand) or give Switch explicit colors.", "selector": "[data-testid^=admin-toggle-]", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Share dialog", "issues": ["URL row + Copy button overflowed the dialog by ~120px (flex row inside grid DialogContent lacked min-w-0) - FIXED by testing agent in ShareButton.jsx"]},
+      {"screen": "Home rows", "issues": ["Row posters start flush at x=0 while row titles are padded 46px - first poster is cut by viewport edge; consider left padding/scroll-padding on rows"]},
+      {"screen": "Sign-in (Clerk)", "issues": ["Continue button text is dark on red - low contrast; set Clerk appearance colorTextOnPrimaryBackground to white"]},
+      {"screen": "Mobile header", "issues": ["Site share button hidden at 390px (only counter + search visible); site-share not reachable on mobile header"]},
+      {"screen": "Live counter", "issues": ["Base changes every 15s with a fresh random 10-20, so value jumps a lot (seen 15->25->19 within a minute); consider smoothing (+/-1-2 steps)"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_cinestream_api.py", "/app/backend/tests/clerk_helper.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Fix ongoing anime episode count (fetch nextAiringEpisode from AniList; use it for EpisodeGrid total and seasonMax in WatchPage)",
+    "Resolve --primary/--muted CSS var collision in index.css so shadcn components (Switch etc.) get valid colors",
+    "Return 404 from /api/anime/{id} when AniList returns 404",
+    "AdminPage toggle/remove/onDragEnd have no try/catch - API failure gives unhandled promise rejection and optimistic order stays wrong; add error toast + reload",
+    "Minor design items above (row left padding, Clerk button text contrast, mobile share entry)"
+  ],
+  "critical_code_review_comments": [
+    "server.py anilist(): non-200 -> 502 hides AniList 404s; also caches empty data {} for errors in data payload",
+    "server.py reorder_servers: N sequential update_one calls - use bulk_write",
+    "server.py presence dict is in-memory per process; fine for single worker only",
+    "AdminPage.jsx toggle/remove/onDragEnd missing error handling",
+    "Escape key does not close trailer dialog when focus is inside YouTube iframe (expected browser behaviour; X button works)"
+  ],
+  "updated_files": ["/app/frontend/src/components/ShareButton.jsx (min-w-0 on link row + span)", "/app/backend/tests/test_cinestream_api.py", "/app/backend/tests/clerk_helper.py", "/app/memory/test_credentials.md"],
+  "success_rate": {"backend": "95% (21/22, 1 skipped)", "frontend": "~93% (all requested flows pass; 1 functional bug for ongoing anime, 1 CSS var bug)"},
+  "test_credentials": "test_credentials.md was EMPTY; filled with existing Clerk users (yash.brandstudio@gmail.com admin, admin+clerk_test@example.com admin, member+clerk_test@example.com member) and ticket/JWT minting instructions via /app/backend/tests/clerk_helper.py",
+  "seed_data_creation": "None persisted. TEST_srv / TEST_UI_srv servers created and deleted; anime + movie server order temporarily changed and restored to seed order (verified public order starts 0vidads,zxcstream,vidyst,vidcore,viduki,cinezo).",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run `cd /app/backend/tests && python -m pytest test_cinestream_api.py -p no:cacheprovider`. Clerk sign-in: python clerk_helper.py tickets -> /sign-in?__clerk_ticket=... (tickets are single-use). Demote-last-admin 409 test is skipped because 2 admins exist (did not change roles of credential users). Clerk UserButton sign-out item: get_by_text('Sign out', exact=True). Poster testids: poster-{type}-{id}, like-{type}-{id}.",
+  "rca of the issue": "Ongoing anime: AniList Media.episodes is null for airing shows; frontend uses `data.episodes || 12`. CSS: Tailwind injects @layer base at @tailwind base (top), so the later plain :root block overrides --primary with a hex value, breaking hsl(var(--primary)) utilities."
+}

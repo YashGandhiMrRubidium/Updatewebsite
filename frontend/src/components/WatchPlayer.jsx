@@ -7,13 +7,16 @@ import { toast } from "sonner";
 import { useApi } from "@/hooks/useApi";
 import { useStored } from "@/lib/store";
 import { applyOrder, buildUrl } from "@/lib/servers";
+import { VideoAd, useAd } from "@/components/AdSlot";
+
+const AD_GAP = 10 * 60 * 1000;
 
 const Chip = ({ server, index, active, overlay, ...rest }) => (
-  <div {...rest} className={`flex w-full select-none items-center gap-2 rounded-md border px-2.5 py-2 text-left text-sm transition-[background-color,border-color,box-shadow] ${active ? "border-[var(--primary)] bg-[var(--primary)]/15 text-white shadow-[0_0_20px_-6px_var(--primary-glow)]" : "border-white/10 bg-[var(--surface)] text-gray-300 hover:border-white/25 hover:bg-[var(--surface-2)]"} ${overlay ? "scale-105 cursor-grabbing shadow-2xl" : "cursor-grab"}`}>
+  <div {...rest} className={`flex w-full select-none items-center gap-2 rounded-md border px-2.5 py-2 text-left text-sm transition-[background-color,border-color,box-shadow] ${active ? "border-[var(--brand)] bg-[var(--brand)]/15 text-white shadow-[0_0_20px_-6px_var(--brand-glow)]" : "border-white/10 bg-[var(--surface)] text-gray-300 hover:border-white/25 hover:bg-[var(--surface-2)]"} ${overlay ? "scale-105 cursor-grabbing shadow-2xl" : "cursor-grab"}`}>
     <GripVertical size={14} className="shrink-0 text-gray-500" />
     <span className="font-mono text-[10px] text-gray-500">{String(index + 1).padStart(2, "0")}</span>
     <span className="flex-1 truncate font-medium">{server.name}</span>
-    {active && <Play size={12} className="shrink-0 fill-[var(--primary)] text-[var(--primary)]" />}
+    {active && <Play size={12} className="shrink-0 fill-[var(--brand)] text-[var(--brand)]" />}
   </div>
 );
 
@@ -28,6 +31,18 @@ const SortableChip = ({ server, index, active, onSelect }) => {
 
 const PlayerDrop = ({ src, dragging, title }) => {
   const { setNodeRef, isOver } = useDroppable({ id: "player-drop" });
+  const ad = useAd("watch_preroll", ["video"]);
+  const [adDone, setAdDone] = useState(() => Date.now() - Number(sessionStorage.getItem("cs:ad-ts") || 0) < AD_GAP);
+  const finishAd = () => {
+    sessionStorage.setItem("cs:ad-ts", String(Date.now()));
+    setAdDone(true);
+  };
+  if (ad && !adDone)
+    return (
+      <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black ring-1 ring-white/10" data-testid="player-drop-zone">
+        <VideoAd ad={ad} onDone={finishAd} />
+      </div>
+    );
   return (
     <div ref={setNodeRef} className="relative aspect-video w-full overflow-hidden rounded-lg bg-black ring-1 ring-white/10" data-testid="player-drop-zone">
       {src ? (
@@ -37,7 +52,7 @@ const PlayerDrop = ({ src, dragging, title }) => {
         <div className="flex h-full items-center justify-center text-gray-500">No server available</div>
       )}
       {dragging && (
-        <div className={`absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 border-2 border-dashed backdrop-blur-sm transition-colors ${isOver ? "border-[var(--primary)] bg-[var(--primary)]/25" : "border-white/30 bg-black/70"}`} data-testid="player-drop-overlay">
+        <div className={`absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 border-2 border-dashed backdrop-blur-sm transition-colors ${isOver ? "border-[var(--brand)] bg-[var(--brand)]/25" : "border-white/30 bg-black/70"}`} data-testid="player-drop-overlay">
           <Play size={40} className="fill-white" />
           <p className="font-display text-lg font-bold">Drop to play on {dragging.name}</p>
         </div>
@@ -90,7 +105,7 @@ export const WatchPlayer = ({ media, title }) => {
       <PlayerDrop key={nonce} src={src} dragging={dragging} title={title} />
       <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-400">
         <span className="flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5" data-testid="active-server-name">
-          <Server size={13} className="text-[var(--primary)]" /> {active ? active.name : "—"}
+          <Server size={13} className="text-[var(--brand)]" /> {active ? active.name : "—"}
         </span>
         <button onClick={() => setNonce((n) => n + 1)} className="flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 hover:bg-white/10" data-testid="player-reload-button">
           <RefreshCw size={13} /> Reload

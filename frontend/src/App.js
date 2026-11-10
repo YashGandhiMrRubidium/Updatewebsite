@@ -11,6 +11,7 @@ const BrowsePage = lazy(() => import("@/pages/BrowsePage"));
 const TitlePage = lazy(() => import("@/pages/TitlePage"));
 const AnimeTitlePage = lazy(() => import("@/pages/AnimeTitlePage"));
 const WatchPage = lazy(() => import("@/pages/WatchPage"));
+const DiscoverPage = lazy(() => import("@/pages/DiscoverPage"));
 const SearchPage = lazy(() => import("@/pages/SearchPage"));
 const MyListPage = lazy(() => import("@/pages/MyListPage"));
 const AdminPage = lazy(() => import("@/pages/AdminPage"));
@@ -35,6 +36,7 @@ function App() {
               <Route path="watch/movie/:id" element={<WatchPage key="wm" type="movie" />} />
               <Route path="watch/tv/:id" element={<WatchPage key="wt" type="tv" />} />
               <Route path="watch/anime/:id" element={<WatchPage key="wa" type="anime" />} />
+              <Route path="discover" element={<DiscoverPage />} />
               <Route path="search" element={<SearchPage />} />
               <Route path="my-list" element={<MyListPage />} />
               <Route element={<ClerkShell />}>

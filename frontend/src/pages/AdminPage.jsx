@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Seo } from "@/components/Seo";
 import { api } from "@/lib/api";
+import { AdsManager } from "@/components/admin/AdsManager";
 
 const useAuthed = () => {
   const { getToken } = useAuth();
@@ -23,7 +24,7 @@ const EMPTY = { name: "", kind: "movie", movie_url: "", tv_url: "", anime_url: "
 const Field = ({ label, hint, ...p }) => (
   <label className="block space-y-1">
     <span className="text-xs font-semibold text-gray-300">{label}</span>
-    <input {...p} className="w-full rounded-md border border-white/10 bg-black/40 px-3 py-2 text-sm outline-none focus:border-[var(--primary)]" />
+    <input {...p} className="w-full rounded-md border border-white/10 bg-black/40 px-3 py-2 text-sm outline-none focus:border-[var(--brand)]" />
     {hint && <span className="text-[11px] text-gray-500">{hint}</span>}
   </label>
 );
@@ -44,7 +45,7 @@ const ServerForm = ({ initial, onSave, onClose }) => {
             <div className="flex gap-2">
               {["movie", "anime"].map((k) => (
                 <button type="button" key={k} onClick={() => setF({ ...f, kind: k })} data-testid={`server-form-kind-${k}`}
-                  className={`flex-1 rounded-md py-2 text-sm font-semibold ${f.kind === k ? "bg-[var(--primary)]" : "bg-white/5 text-gray-400"}`}>{k === "movie" ? "Movies & TV" : "Anime"}</button>
+                  className={`flex-1 rounded-md py-2 text-sm font-semibold ${f.kind === k ? "bg-[var(--brand)]" : "bg-white/5 text-gray-400"}`}>{k === "movie" ? "Movies & TV" : "Anime"}</button>
               ))}
             </div>
           )}
@@ -67,7 +68,7 @@ const ServerRow = ({ s, index, onToggle, onEdit, onDelete }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: s.id });
   return (
     <div ref={setNodeRef} style={{ transform: CSS.Transform.toString(transform), transition }} data-testid={`admin-server-${s.id}`}
-      className={`flex items-center gap-3 rounded-md border border-white/5 bg-[var(--surface)] px-3 py-2.5 ${isDragging ? "z-10 shadow-2xl ring-1 ring-[var(--primary)]" : ""}`}>
+      className={`flex items-center gap-3 rounded-md border border-white/5 bg-[var(--surface)] px-3 py-2.5 ${isDragging ? "z-10 shadow-2xl ring-1 ring-[var(--brand)]" : ""}`}>
       <button {...attributes} {...listeners} className="cursor-grab touch-none text-gray-500 hover:text-white" aria-label="Drag" data-testid={`admin-drag-${s.id}`}><GripVertical size={18} /></button>
       <span className="w-6 font-mono text-xs text-gray-500">{index + 1}</span>
       <div className="min-w-0 flex-1">
@@ -99,20 +100,18 @@ const ServerManager = ({ call }) => {
       load();
     } catch { toast.error("Could not save server"); }
   };
-  const toggle = async (s) => { await call("put", `/admin/servers/${s.id}`, body({ ...s, enabled: !s.enabled })); load(); };
-  const remove = async (s) => {
-    if (!window.confirm(`Delete ${s.name}?`)) return;
-    await call("delete", `/admin/servers/${s.id}`);
-    toast.success("Server deleted");
+  const run = async (fn, ok) => {
+    try { await fn(); if (ok) toast.success(ok); } catch { toast.error("Something went wrong"); }
     load();
   };
+  const toggle = (s) => run(() => call("put", `/admin/servers/${s.id}`, body({ ...s, enabled: !s.enabled })));
+  const remove = (s) => window.confirm(`Delete ${s.name}?`) && run(() => call("delete", `/admin/servers/${s.id}`), "Server deleted");
   const onDragEnd = async ({ active, over }) => {
     if (!over || active.id === over.id) return;
     const ids = list.map((s) => s.id);
     const next = arrayMove(list, ids.indexOf(active.id), ids.indexOf(over.id)).map((s, i) => ({ ...s, order: i }));
     setAll([...all.filter((s) => s.kind !== kind), ...next]);
-    await call("put", "/admin/servers-order", { kind, ids: next.map((s) => s.id) });
-    toast.success("Default order saved");
+    run(() => call("put", "/admin/servers-order", { kind, ids: next.map((s) => s.id) }), "Default order saved");
   };
 
   return (
@@ -149,7 +148,7 @@ const UsersPanel = ({ call }) => {
   };
   if (!d) return null;
   return (
-    <section className="mt-12" data-testid="admin-users-panel">
+    <section data-testid="admin-users-panel">
       <h2 className="font-display mb-3 text-lg font-bold">Users</h2>
       <div className="space-y-2">
         {d.users.map((u) => (
@@ -165,6 +164,24 @@ const UsersPanel = ({ call }) => {
   );
 };
 
+const TABS = [["servers", "Servers"], ["ads", "Ads"], ["users", "Users"]];
+const AdminTabs = ({ call }) => {
+  const [tab, setTab] = useState("servers");
+  return (
+    <>
+      <div className="mb-6 flex gap-1 border-b border-white/10">
+        {TABS.map(([k, l]) => (
+          <button key={k} onClick={() => setTab(k)} data-testid={`admin-tab-${k}`}
+            className={`-mb-px border-b-2 px-4 py-2 text-sm font-semibold transition-colors ${tab === k ? "border-[var(--brand)] text-white" : "border-transparent text-gray-500 hover:text-white"}`}>{l}</button>
+        ))}
+      </div>
+      {tab === "servers" && <ServerManager call={call} />}
+      {tab === "ads" && <AdsManager call={call} />}
+      {tab === "users" && <UsersPanel call={call} />}
+    </>
+  );
+};
+
 const AdminInner = () => {
   const call = useAuthed();
   const [me, setMe] = useState(null);
@@ -177,7 +194,7 @@ const AdminInner = () => {
         <p className="mt-2 text-sm text-gray-400">This account ({me.email || "unknown"}) is not an admin.</p>
       </div>
     );
-  return (<><ServerManager call={call} /><UsersPanel call={call} /></>);
+  return <AdminTabs call={call} />;
 };
 
 export default function AdminPage() {
@@ -185,8 +202,8 @@ export default function AdminPage() {
     <div className="mx-auto max-w-4xl px-4 pb-10 pt-20 sm:px-8 sm:pt-24" data-testid="admin-page">
       <Seo title="Admin" />
       <div className="mb-8 flex items-center gap-3">
-        <ShieldCheck className="text-[var(--primary)]" size={28} />
-        <h1 className="font-display flex-1 text-3xl font-extrabold tracking-tight sm:text-4xl">Server Manager</h1>
+        <ShieldCheck className="text-[var(--brand)]" size={28} />
+        <h1 className="font-display flex-1 text-3xl font-extrabold tracking-tight sm:text-4xl">Admin</h1>
         <Show when="signed-in"><UserButton /></Show>
       </div>
       <Show when="signed-in"><AdminInner /></Show>

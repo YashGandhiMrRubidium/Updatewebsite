@@ -9,6 +9,8 @@ import { WatchPlayer } from "@/components/WatchPlayer";
 import { useApi } from "@/hooks/useApi";
 import { fromAni, fromTmdb, titlePath, tmdbList } from "@/lib/media";
 import { pushHistory } from "@/lib/store";
+import { recordView, setWatching, usePresence } from "@/lib/presence";
+import { AdSlot } from "@/components/AdSlot";
 import { SeasonEpisodes } from "@/pages/TitlePage";
 import { EpisodeGrid, recsOf } from "@/pages/AnimeTitlePage";
 
@@ -31,15 +33,20 @@ export default function WatchPage({ type }) {
   const item = data ? (type === "anime" ? fromAni(data) : fromTmdb(data, type)) : null;
   const media = useMemo(() => ({ type, id, season, episode, lang }), [type, id, season, episode, lang]);
 
+  const { watchers } = usePresence();
   useEffect(() => {
-    if (item) pushHistory(item);
+    if (!item) return;
+    pushHistory(item);
+    recordView(item);
+    setWatching(item);
+    return () => setWatching(null);
   }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) return <PageLoader />;
   if (error || !item) return <NotFound />;
 
   const setQ = (patch) => setParams({ ...Object.fromEntries(params), ...patch });
-  const totalAnime = data.episodes || 12;
+  const totalAnime = item.episodes || 12;
   const seasonMax = type === "tv" ? data.seasons?.find((s) => s.season_number === season)?.episode_count || 1 : totalAnime;
   const sub = type === "movie" ? item.year : type === "tv" ? `Season ${season} · Episode ${episode}` : `Episode ${episode} · ${lang.toUpperCase()}`;
   const recs = type === "anime" ? recsOf(data) : tmdbList(data.recommendations, type);
@@ -55,13 +62,21 @@ export default function WatchPage({ type }) {
           </button>
           <div className="min-w-0 flex-1">
             <Link to={titlePath(item)} className="font-display line-clamp-1 text-xl font-bold hover:underline sm:text-2xl lg:text-3xl" data-testid="watch-title">{item.title}</Link>
-            <p className="text-xs text-gray-400 sm:text-sm" data-testid="watch-subtitle">{sub}</p>
+            <p className="flex flex-wrap items-center gap-x-3 text-xs text-gray-400 sm:text-sm" data-testid="watch-subtitle">
+              {sub}
+              {watchers ? (
+                <span className="flex items-center gap-1.5 text-[#46d369]" data-testid="watch-watchers-count">
+                  <span className="live-dot h-1.5 w-1.5 rounded-full bg-[#46d369]" /> {watchers} watching now
+                </span>
+              ) : null}
+            </p>
           </div>
           <ShareButton title={item.title} url={`${window.location.origin}${titlePath(item)}`} testId="watch-share-button"
             className="btn-ghost flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold" />
         </div>
         <div className="mx-auto max-w-6xl">
           <WatchPlayer media={media} title={item.title} />
+          <AdSlot placement="watch_below_player" className="mt-6" />
           {type !== "movie" && (
             <div className="mt-6 flex flex-wrap items-center gap-2">
               <StepBtn dir={-1} disabled={episode <= 1} onClick={() => setQ({ [epKey]: episode - 1 })} testId="prev-episode-button" />
@@ -70,7 +85,7 @@ export default function WatchPage({ type }) {
                 <div className="ml-auto flex gap-1 rounded-full bg-white/5 p-1" data-testid="audio-toggle">
                   {["sub", "dub"].map((l) => (
                     <button key={l} onClick={() => setQ({ lang: l })} data-testid={`audio-${l}`}
-                      className={`rounded-full px-4 py-1.5 text-xs font-bold uppercase transition-colors ${lang === l ? "bg-[var(--primary)] text-white" : "text-gray-400 hover:text-white"}`}>{l}</button>
+                      className={`rounded-full px-4 py-1.5 text-xs font-bold uppercase transition-colors ${lang === l ? "bg-[var(--brand)] text-white" : "text-gray-400 hover:text-white"}`}>{l}</button>
                   ))}
                 </div>
               )}

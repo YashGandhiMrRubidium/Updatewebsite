@@ -30,7 +30,7 @@ export const Hero = ({ items, loading }) => {
       <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0c] via-[#0a0a0c]/70 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent" />
       <div key={i} className="relative z-10 flex h-full max-w-3xl flex-col justify-end gap-4 px-4 pb-16 sm:px-8 sm:pb-24 lg:px-14">
-        <div className="fade-up flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] text-[var(--primary)]">
+        <div className="fade-up flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand)]">
           <Flame size={14} /> #{i + 1} Trending today
         </div>
         <h1 className="fade-up fade-up-2 font-display text-4xl font-extrabold leading-[0.95] tracking-tight sm:text-5xl lg:text-6xl" data-testid="hero-title">{it.title}</h1>
@@ -58,7 +58,7 @@ export const Hero = ({ items, loading }) => {
       <div className="absolute bottom-20 right-4 z-10 flex gap-1.5 sm:bottom-28 sm:right-14">
         {list.map((x, idx) => (
           <button key={keyOf(x)} onClick={() => setI(idx)} aria-label={`Slide ${idx + 1}`} data-testid={`hero-dot-${idx}`}
-            className={`h-1 rounded-full transition-[width,background-color] duration-500 ${idx === i ? "w-8 bg-[var(--primary)]" : "w-3 bg-white/40"}`} />
+            className={`h-1 rounded-full transition-[width,background-color] duration-500 ${idx === i ? "w-8 bg-[var(--brand)]" : "w-3 bg-white/40"}`} />
         ))}
       </div>
     </section>

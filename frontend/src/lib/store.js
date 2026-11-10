@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 
-const read = (k, d) => {
+export const read = (k, d) => {
   try {
     return JSON.parse(localStorage.getItem(k)) ?? d;
   } catch {
     return d;
   }
 };
-const write = (k, v) => {
+export const write = (k, v) => {
   localStorage.setItem(k, JSON.stringify(v));
   window.dispatchEvent(new CustomEvent(`store:${k}`));
 };
 
 export const keyOf = (it) => `${it.type}:${it.id}`;
-const slim = ({ id, type, title, poster, backdrop, year, rating }) => ({ id, type, title, poster, backdrop, year, rating });
+export const slim = ({ id, type, title, poster, backdrop, year, rating, genreIds, genres }) => ({ id, type, title, poster, backdrop, year, rating, genreIds, genres });
 
 export function useStored(k, d) {
   const [v, setV] = useState(() => read(k, d));

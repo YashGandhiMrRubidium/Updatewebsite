@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Chips, Grid } from "@/components/Grid";
 import { Seo } from "@/components/Seo";
+import { AdSlot } from "@/components/AdSlot";
 import { cachedGet } from "@/lib/api";
 import { ANIME_GENRES, MOVIE_GENRES, TV_GENRES, aniList, tmdbList } from "@/lib/media";
 
@@ -67,10 +68,11 @@ export default function BrowsePage({ type }) {
 
   return (
     <div className="px-4 pt-20 sm:px-8 sm:pt-24 lg:px-14" data-testid={`browse-page-${type}`}>
-      <Seo title={genreName ? `${genreName} ${c.title}` : c.title} description={`Browse and stream ${genreName || "the best"} ${c.title.toLowerCase()} online in HD.`} />
+      <Seo title={`Watch ${genreName ? `${genreName} ` : ""}${c.title} Online Free in HD`} description={`Browse and stream ${genreName || "the best"} ${c.title.toLowerCase()} online free in HD, no sign-up. Trending, top rated and newest ${c.title.toLowerCase()} updated daily.`}
+        keywords={`free ${c.title.toLowerCase()} online, watch ${(genreName || "").toLowerCase()} ${c.title.toLowerCase()} free, best ${c.title.toLowerCase()} streaming site`} />
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="fade-up">
-          <p className="mb-1 text-xs font-bold uppercase tracking-[0.25em] text-[var(--primary)]">Browse</p>
+          <p className="mb-1 text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand)]">Browse</p>
           <h1 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl" data-testid="browse-title">{genreName ? `${genreName}` : c.title}</h1>
         </div>
         <div className="flex gap-1 rounded-full bg-white/5 p-1" data-testid="sort-tabs">
@@ -83,6 +85,7 @@ export default function BrowsePage({ type }) {
       <div className="mb-6">
         <Chips options={c.genres} value={genre} onChange={(v) => update("genre", v)} testPrefix="genre" />
       </div>
+      <AdSlot placement="browse_top" className="mb-6" />
       <Grid items={items} loading={loading} />
       {!loading && !items.length && <p className="py-20 text-center text-gray-500" data-testid="browse-empty">Nothing found here.</p>}
       {more && !loading && items.length > 0 && (

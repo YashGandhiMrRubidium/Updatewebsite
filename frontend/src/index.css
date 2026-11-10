@@ -6,11 +6,10 @@
     --bg: #0a0a0c;
     --surface: #121318;
     --surface-2: #1a1c23;
-    --primary: #e50914;
-    --primary-hover: #f4121d;
-    --primary-glow: rgba(229, 9, 20, 0.35);
+    --brand: #e50914;
+    --brand-hover: #f4121d;
+    --brand-glow: rgba(229, 9, 20, 0.35);
     --text: #f3f4f6;
-    --muted: #9ca3af;
     --line: rgba(255, 255, 255, 0.08);
 }
 
@@ -49,7 +48,7 @@
         overflow-x: hidden;
     }
     ::selection {
-        background: var(--primary);
+        background: var(--brand);
         color: #fff;
     }
 }
@@ -122,14 +121,24 @@
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+.top10-num {
+    color: #0a0a0c;
+    -webkit-text-stroke: 3px #4b4b55;
+    letter-spacing: -0.08em;
+    transition: -webkit-text-stroke-color 0.3s;
+}
+.group:hover .top10-num {
+    -webkit-text-stroke-color: var(--brand);
+}
+
 .btn-primary {
-    background: var(--primary);
+    background: var(--brand);
     color: #fff;
     transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 .btn-primary:hover {
-    background: var(--primary-hover);
-    box-shadow: 0 8px 30px var(--primary-glow);
+    background: var(--brand-hover);
+    box-shadow: 0 8px 30px var(--brand-glow);
     transform: translateY(-1px);
 }
 .btn-ghost {
