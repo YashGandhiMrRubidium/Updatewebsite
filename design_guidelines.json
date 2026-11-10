@@ -1,0 +1,81 @@
+{
+  "project_name": "CineStream - Netflix-Style Streaming Platform",
+  "archetype": "LUXURY_CINEMATIC",
+  "theme": {
+    "mode": "dark",
+    "colors": {
+      "background": "#0a0a0c",
+      "surface": "#121318",
+      "surface_elevated": "#1a1c23",
+      "primary": "#E50914",
+      "primary_hover": "#f4121d",
+      "primary_glow": "rgba(229, 9, 20, 0.35)",
+      "accent": "#FF2D55",
+      "text_main": "#F3F4F6",
+      "text_muted": "#9CA3AF",
+      "border": "rgba(255, 255, 255, 0.08)",
+      "border_active": "rgba(229, 9, 20, 0.5)",
+      "badge_bg": "rgba(229, 9, 20, 0.15)",
+      "badge_text": "#FF4D52"
+    }
+  },
+  "typography": {
+    "heading_font": "Outfit, sans-serif",
+    "body_font": "Inter, sans-serif",
+    "mono_font": "JetBrains Mono, monospace",
+    "scale": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight",
+      "h3": "text-xl sm:text-2xl font-semibold",
+      "body": "text-sm sm:text-base text-gray-300 leading-relaxed",
+      "caption": "text-xs text-gray-400 font-medium"
+    }
+  },
+  "servers": {
+    "movies_tv": [
+      {"id": "0vidads", "name": "0vidads.top", "domain": "0vidads.top", "url_template": "https://0vidads.top/embed/{type}/{id}", "status": "online", "quality": "4K Ultra HD", "ad_free": true},
+      {"id": "zxcstream", "name": "zxcstream.cc", "domain": "zxcstream.cc", "url_template": "https://zxcstream.cc/v/{id}", "status": "online", "quality": "1080p HD", "ad_free": true},
+      {"id": "vidyst", "name": "vidy.st", "domain": "vidy.st", "url_template": "https://vidy.st/e/{id}", "status": "online", "quality": "1080p HD", "ad_free": true},
+      {"id": "vidcore", "name": "vidcore.io", "domain": "vidcore.io", "url_template": "https://vidcore.io/embed/{type}/{id}", "status": "online", "quality": "1080p Fast", "ad_free": true},
+      {"id": "viduki", "name": "viduki.net", "domain": "viduki.net", "url_template": "https://viduki.net/play/{id}", "status": "online", "quality": "720p/1080p", "ad_free": true},
+      {"id": "cinezo", "name": "cinezo.live", "domain": "cinezo.live", "url_template": "https://cinezo.live/watch/{type}/{id}", "status": "online", "quality": "4K VIP", "ad_free": true}
+    ],
+    "anime": [
+      {"id": "megaplay", "name": "megaplay.buzz", "domain": "megaplay.buzz", "url_template": "https://megaplay.buzz/stream/{id}", "status": "online", "quality": "1080p Dual Audio (Sub/Dub)", "ad_free": true}
+    ]
+  },
+  "key_features": [
+    "No-ads clean playback guarantee with default Adsterra blocks stripped",
+    "Netflix-inspired Hero Banner with Play, My List bookmark, and Share trigger",
+    "Horizontal poster carousels with hover preview expansion, ratings, tags, and play action",
+    "Watch Player Page with embedded iframe + interactive Drag & Drop Server Switcher",
+    "Live Online Users Pill Counter initialized with base 12-18 users and subtle real-time heartbeat",
+    "TV & Anime Episode Browser with Season selectors and Subbed/Dubbed toggles",
+    "Share Sheet / Modal supporting WhatsApp, Telegram, X, Facebook, Direct Link Copy",
+    "Instant Search Overlay with live filter tags (Movies, TV, Anime, Action, Sci-Fi)",
+    "My List / Bookmarks stored in persistent localStorage",
+    "Admin Server Management dashboard for drag reordering, adding custom server endpoints, and toggling servers",
+    "Responsive Mobile Layout with Sticky Glass Header & Bottom Navigation Bar"
+  ],
+  "image_urls": {
+    "hero_banner": "https://images.unsplash.com/photo-1642345843526-6279c8880a49?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "cyberpunk_anime": "https://images.unsplash.com/photo-1677143016687-8dbb7e71db08?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "dark_cinema": "https://images.unsplash.com/photo-1780764818559-1dd2205ea2c5?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "night_street": "https://images.unsplash.com/photo-1600998837340-4887228e311f?crop=entropy&cs=srgb&fm=jpg&q=85"
+  },
+  "component_structure": {
+    "header": "Glassmorphic top bar with logo, nav links (Home, Movies, TV, Anime, My List), Live Online Counter, Search button, and Admin link",
+    "hero": "Full-bleed backdrop gradient overlay, animated headline, badge tags, quick play and share buttons",
+    "content_rows": "Horizontal swipable rows with back/next controls, hover zoom poster cards with title overlay",
+    "watch_page": "Responsive aspect-video player container, draggable server list for priority switching, server health indicators, episode selection grid",
+    "admin_page": "Clean table of active servers, toggle switches, priority order drag handles, server endpoint test trigger",
+    "mobile_nav": "Fixed bottom navigation bar for mobile viewports (Home, Explore, Search, My List, Admin)"
+  },
+  "instructions_to_main_agent": [
+    "Ensure all code uses standard JavaScript React syntax (.js / .jsx files).",
+    "Use lucide-react icons for UI elements (Play, Plus, Share2, Search, Server, GripVertical, Tv, Film, Sparkles, User, Check, ShieldCheck).",
+    "Implement data-testid attributes on all interactive elements: `data-testid='hero-play-button'`, `data-testid='server-item-{id}'`, `data-testid='share-button'`, `data-testid='search-input'`, `data-testid='live-counter'`.",
+    "Keep ad blocks completely disabled/removed. Show clear badge '100% Ad-Free Direct Stream'.",
+    "Make server drag and drop smooth using Framer Motion reorder or HTML5 drag-and-drop fallback."
+  ]
+}
