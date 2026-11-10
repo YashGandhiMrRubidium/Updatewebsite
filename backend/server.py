@@ -148,6 +148,19 @@ class MediaIn(BaseModel):
     rating: Optional[str] = Field(default=None, max_length=8)
 
 
+IMG_HOSTS = ("https://image.tmdb.org/", "https://s4.anilist.co/", "https://img.anili.st/")
+
+
+def safe_media(m: dict) -> dict:
+    for f in ("poster", "backdrop"):
+        if m.get(f) and not m[f].startswith(IMG_HOSTS):
+            m[f] = None
+    return m
+
+
+view_seen: dict = {}
+
+
 class PresenceIn(BaseModel):
     session_id: str = Field(min_length=4, max_length=64)
     watching: Optional[MediaIn] = None
@@ -199,7 +212,7 @@ def real_watchers() -> dict:
 
 @api_router.post("/presence")
 async def heartbeat(body: PresenceIn):
-    w = body.watching.model_dump() if body.watching else None
+    w = safe_media(body.watching.model_dump()) if body.watching else None
     presence[body.session_id] = (time.time(), w)
     real = len(list(active_sessions()))
     res = {"online": base_online() + real, "real": real, "watchers": None}
@@ -229,9 +242,17 @@ async def live_now():
 
 
 @api_router.post("/views")
-async def record_view(body: MediaIn):
-    m = body.model_dump()
+async def record_view(body: MediaIn, request: Request):
+    m = safe_media(body.model_dump())
     day = time.strftime("%Y-%m-%d", time.gmtime())
+    ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "")).split(",")[0].strip()
+    if view_seen.get("day") != day:
+        view_seen.clear()
+        view_seen["day"] = day
+    seen = view_seen.setdefault(ip, set())
+    if mkey(m) in seen or len(seen) > 200:
+        return {"ok": True}
+    seen.add(mkey(m))
     await db.views.update_one({"key": mkey(m), "day": day}, {"$inc": {"count": 1}, "$set": {**m, "key": mkey(m), "day": day}}, upsert=True)
     return {"ok": True}
 
@@ -241,6 +262,7 @@ async def top10(type: Literal["movie", "tv", "anime"]):
     since = time.strftime("%Y-%m-%d", time.gmtime(time.time() - 7 * 86400))
     rows = await db.views.aggregate([
         {"$match": {"type": type, "day": {"$gte": since}}},
+        {"$sort": {"day": 1}},
         {"$group": {"_id": "$key", "views": {"$sum": "$count"}, "item": {"$last": "$$ROOT"}}},
         {"$sort": {"views": -1}}, {"$limit": 10},
     ]).to_list(10)

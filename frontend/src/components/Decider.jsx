@@ -98,7 +98,7 @@ export const Decider = () => {
           )}
           {phase === "swipe" && <p className="mt-4 text-xs text-gray-500" data-testid="decider-progress">Card {idx + 1} of {deck.length} · swipe or tap a button</p>}
         </div>
-        <div className="mx-auto w-full max-w-[300px]">
+        <div className="mx-auto w-full max-w-[210px] sm:max-w-[300px]">
           {(phase === "idle" || phase === "loading") && (
             <div className="relative aspect-[2/3] w-full">
               <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-2xl border border-white/5 bg-white/[0.02]" />

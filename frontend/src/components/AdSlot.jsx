@@ -18,7 +18,7 @@ const AdBody = ({ ad }) => {
   if (ad.kind === "html")
     return (
       <iframe title={ad.name} srcDoc={`<!doctype html><html><head><base target="_blank"></head><body style="margin:0;display:flex;justify-content:center;align-items:center;background:transparent">${ad.html}</body></html>`}
-        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"
+        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
         style={{ height: ad.height }} className="w-full border-0" loading="lazy" data-testid={`ad-html-${ad.id}`} />
     );
   const media = ad.kind === "video"

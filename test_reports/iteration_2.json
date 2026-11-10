@@ -1,0 +1,37 @@
+{
+  "summary": "Iteration 2 full test of CineStream new features. Backend: 41 pytest passed, 1 skipped (pre-existing demote-last-admin skip) across new test_iter2_features.py (presence/live, views/top10, ads CRUD+auth+validation, sitemap, anime 404, One Piece ongoing) and the iteration-1 regression suite. Frontend (Playwright): footer has no admin link, /admin works; Live Now (12 items, 'N watching now'), Top10 movie/tv/anime (10 items each), 8 vibe chips -> /discover?vibe=id, vibe-decider-link scrolls to Decider, SEO block with 5 expandable FAQs, JSON-LD + keywords meta; Decider (drag swipe + buttons, 8 cards -> pick, Play href, Another) and 'Top Picks For You' row after reload; history -> 'Because you watched Fight Club'; Discover (Hyped Films title, rating/genre/era/length/lang chips update URL+results, type tv, sort top/new, load more 40->80); watch page watchers count; Ads admin UI (create image ad home_middle -> renders between Romance and Top Rated TV; create video preroll skip 3s -> countdown 3..0, skip -> iframe player, not shown again on next watch page; toggle disable -> slot gone; edit prefill+rename; delete both -> empty state); shadcn Switch checked = red rgb(230,10,21), unchecked = white/12%; admin tabs servers/ads/users; One Piece 12 range tabs (1-100 ... 1101-1180), ep 1100 -> next 1101; mobile 390px no horizontal overflow on home/discover/decider/watch; regressions (search, My List, share dialog, server drag-to-player & reorder) pass. No functional bugs found.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/views", "issue": "Unauthenticated, unthrottled and accepts arbitrary title/poster: anyone can script requests to push any title (with an attacker-chosen poster URL/title text) to #1 in the public Top 10 rows. Consider rate-limit per session/IP and resolving title/poster server-side from TMDB/AniList by id."},
+      {"endpoint": "POST /api/presence", "issue": "Same: client-supplied title/poster for 'watching' is shown publicly in Live Now; fake sessions can inject arbitrary titles/images. Presence is in-process memory (not shared across workers, lost on restart)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Home Decider (mobile 390px)", "issues": ["Swipe card is tall; Loved/Not for me/Haven't seen buttons are below the fold, user must scroll down past the card to tap them"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_iter2_features.py", "/app/backend/tests/test_cinestream_api.py", "/app/test_reports/pytest/pytest_iter2.xml"],
+  "action_items": [
+    "Optional hardening: rate-limit /api/views and /api/presence and derive title/poster server-side to prevent Top 10 / Live Now manipulation",
+    "Optional: HTML ad iframe uses srcDoc with sandbox 'allow-scripts allow-same-origin' -> ad script runs with the site origin (can read localStorage/Clerk session cookies/parent DOM). Drop allow-same-origin (most ad tags work without it) or serve ad HTML from a separate origin",
+    "Optional: on mobile, make Decider card shorter so answer buttons are visible without scrolling"
+  ],
+  "critical_code_review_comments": [
+    "AdSlot.jsx: srcDoc iframe + allow-scripts + allow-same-origin effectively removes the sandbox (same-origin with the app).",
+    "server.py top10: $group uses $last without a preceding $sort, so the item metadata picked is arbitrary (minor).",
+    "AdsManager error toast reads detail[0].msg; string details (404/403) fall back to generic 'Something went wrong' (minor).",
+    "Discover filter chip testids for 'Any/All' are 'filter-rating-' / 'filter-genre-' etc. (empty suffix) - consider 'filter-rating-any' for clarity."
+  ],
+  "updated_files": ["/app/backend/tests/test_iter2_features.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "Used /app/memory/test_credentials.md flow via clerk_helper.py (admin JWT/ticket for yash.brandstudio@gmail.com Clerk user as in iteration 1, member+clerk_test@example.com). No roles/passwords changed.",
+  "seed_data_creation": "Created 2 ads via UI (TEST_ImageAd, TEST_VideoAd) and API test ads - all deleted; /api/ads returns [] and ads collection count = 0. Fake views doc movie:999990001 deleted. No test servers created/left. Note: UI browsing recorded genuine views (Fight Club 550, Inception 27205, One Piece 21, etc.) in views collection via normal app behavior - left as-is.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Run: cd /app/backend/tests && python -m pytest test_iter2_features.py test_cinestream_api.py -p no:cacheprovider. Admin UI sign-in: python clerk_helper.py tickets -> /sign-in?__clerk_ticket=... (single-use, wait ~6s then go /admin). Ad delete uses window.confirm -> register page.on('dialog') accept. Preroll ad suppressed for 10 min via sessionStorage cs:ad-ts. Anime watch testids: anime-episode-{n}, episode-range-{i}, next-episode-button.",
+  "rca of the issue": "N/A - no functional failures"
+}
